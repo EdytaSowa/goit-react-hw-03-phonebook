@@ -17,6 +17,23 @@ export class App extends Component {
     number: '',
   };
 
+
+  componentDidMount() {
+    const contactsFromLS = localStorage.getItem('contactsList'); // pobieram z LS contactlist
+    const parsedContacts = JSON.parse(contactsFromLS); // zamieniać na JS
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts }); 
+    } // jezeli jest coś w parsedContacts to aktualizujemy contacts
+  }
+
+  componentDidUpdate(_, prevState) {
+      //porównuje poprzednie kontakty z obecnymi, po aktualizacji - zmianie stanu. jeżeli sie różnią, to wrzucam do LS, zmieniając na JSON
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contactsList', JSON.stringify(this.state.contacts));
+    }
+  }
+
   handleChange = e => {
     const { name, value } = e.target;
     this.setState({ [name]: value });
@@ -28,12 +45,15 @@ export class App extends Component {
     const number = e.number;
     const contactsLists = [...this.state.contacts];
 
-    if (contactsLists.findIndex(contact => name.toLowerCase() === contact.name.toLowerCase()) !== -1) {
+    if (
+      contactsLists.findIndex(
+        contact => name.toLowerCase() === contact.name.toLowerCase()
+      ) !== -1
+    ) {
       alert(`${name} is already in contacts.`);
     } else {
       contactsLists.push({ name, id, number });
     }
-
     this.setState({ contacts: contactsLists });
   };
 
